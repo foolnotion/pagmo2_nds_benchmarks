@@ -1,6 +1,6 @@
 
-#include <iostream>
 
+#include "cxxopts.hpp"
 #define ANKERL_NANOBENCH_IMPLEMENT
 #include "nanobench.h"
 
@@ -12,10 +12,10 @@
 #include <pagmo/problems/dtlz.hpp>
 #include <pagmo/utils/nondominated_sorting.hpp>
 
-#include <cxxopts.hpp>
 #include <tbb/global_control.h>
 #include <tbb/parallel_for.h>
 
+#include <iostream>
 #include <thread>
 #include <unordered_map>
 
