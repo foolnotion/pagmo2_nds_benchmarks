@@ -95,7 +95,7 @@ message(STATUS "Library installation directory: ${PAGMO_INSTALL_LIBDIR}")
 
 # Assemble the flags.
 set(PAGMO_CXX_FLAGS_DEBUG ${YACMA_CXX_FLAGS} ${YACMA_CXX_FLAGS_DEBUG} ${YACMA_THREADING_CXX_FLAGS})
-set(PAGMO_CXX_FLAGS_RELEASE ${YACMA_CXX_FLAGS} ${YACMA_THREADING_CXX_FLAGS} -march=x86-64;-mfma;-mavx2)
+set(PAGMO_CXX_FLAGS_RELEASE ${YACMA_CXX_FLAGS} ${YACMA_THREADING_CXX_FLAGS} -march=x86-64;-mfma;-mavx2;-g;-O3;)
 if(APPLE AND YACMA_COMPILER_IS_CLANGXX)
   message(STATUS "Clang compiler on OSX detected, setting the standard library to 'libc++'.")
   list(APPEND PAGMO_CXX_FLAGS_DEBUG "-stdlib=libc++")
@@ -143,6 +143,9 @@ endif()
 # fails, fall back to our own FindTBB.cmake. This is of course
 # not an ideal solution, but it should work until oneTBB
 # becomes widely deployed.
+find_package(Eigen3 REQUIRED)
+find_package(cpp-sort REQUIRED)
+
 find_package(TBB QUIET CONFIG)
 if(NOT TBB_FOUND)
     message(STATUS "TBB not found using config mode, retrying in module mode.")
@@ -271,6 +274,7 @@ set(PAGMO_SRC_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/src/utils/nds/non_dominated_sort.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/utils/nds/merge_sort.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/utils/nds/rank_sort.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/utils/nds/rank_ordinal.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/utils/hypervolume.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/utils/hv_algos/hv_algorithm.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/utils/hv_algos/hv_bf_approx.cpp"
@@ -353,6 +357,8 @@ target_include_directories(pagmo PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
     $<INSTALL_INTERFACE:include>)
 
+target_include_directories(pagmo PUBLIC ${EIGEN3_INCLUDE_DIR})
+
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.9.0")
     if (PAGMO_ENABLE_IPO)
         include(CheckIPOSupported)
@@ -370,9 +376,10 @@ endif()
 
 # Threads.
 target_link_libraries(pagmo PUBLIC Threads::Threads)
+target_link_libraries(pagmo PUBLIC cpp-sort::cpp-sort)
 
 # Boost.
-target_link_libraries(pagmo PUBLIC Boost::boost Boost::serialization)
+target_link_libraries(pagmo PUBLIC Boost::boost Boost::serialization jemalloc)
 # NOTE: quench warnings from Boost when building the library.
 target_compile_definitions(pagmo PRIVATE BOOST_ALLOW_DEPRECATED_HEADERS)
 

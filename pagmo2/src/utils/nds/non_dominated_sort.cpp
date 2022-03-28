@@ -36,21 +36,22 @@ namespace detail
 {
 using fnds_function_pointer_t = std::add_pointer_t<fnds_return_type(const std::vector<vector_double> &)>;
 
-static const std::array<fnds_function_pointer_t, 7> algorithm_dispatch{
+static const std::array<fnds_function_pointer_t, 8> algorithm_dispatch{
     &deductive_sorting,
     &efficient_sorting_binary,
     &efficient_sorting_sequential,
     &hierarchical_sorting,
     &merge_non_dominated_sorting,
     &fast_non_dominated_sorting,
-    &rank_non_dominated_sorting
+    &rank_non_dominated_sorting,
+    &rank_ordinal_non_dominated_sorting
 };
 } // namespace detail
 
 PAGMO_DLL_PUBLIC fnds_return_type non_dominated_sorting(const std::vector<vector_double> &points,
                                                         non_dominated_sorting_algorithm alg, bool dominate_on_equal)
 {
-    if (alg < non_dominated_sorting_algorithm::DS || alg > non_dominated_sorting_algorithm::RS) {
+    if (alg < non_dominated_sorting_algorithm::DS || alg > non_dominated_sorting_algorithm::RO) {
         pagmo_throw(std::invalid_argument, "unknown algorithm enum value: " + std::to_string(static_cast<int>(alg)));
     }
 

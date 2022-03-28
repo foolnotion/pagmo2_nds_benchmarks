@@ -21,4 +21,5 @@ add_subdirectory(./pagmo2 ./build EXCLUDE_FROM_ALL)
 add_executable(nsga2_dtlz
     main.cpp
 )
-target_link_libraries(nsga2_dtlz PRIVATE pagmo tbb)
+target_link_libraries(nsga2_dtlz PRIVATE pagmo tbb jemalloc)
+target_compile_options(nsga2_dtlz PRIVATE "$<$<CONFIG:Debug>:-g>$<$<CONFIG:Release>:-O3;-march=x86-64;-mavx2;-mfma>")

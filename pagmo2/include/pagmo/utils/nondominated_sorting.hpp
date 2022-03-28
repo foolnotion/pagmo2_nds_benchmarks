@@ -46,7 +46,8 @@ namespace pagmo
         HS,     // hierarchical sort
         MNDS,   // merge non-dominated sort
         NDS,    // fast non-dominated sort
-        RS      // rank sort
+        RS,     // rank sort
+        RO      // rank ordinal sort
     };
 
 namespace detail
@@ -144,6 +145,8 @@ PAGMO_DLL_PUBLIC fnds_return_type merge_non_dominated_sorting(const std::vector<
 
 // Rank non-dominated sorting
 PAGMO_DLL_PUBLIC fnds_return_type rank_non_dominated_sorting(const std::vector<vector_double> &);
+
+PAGMO_DLL_PUBLIC fnds_return_type rank_ordinal_non_dominated_sorting(const std::vector<vector_double> &);
 
 } // namespace pagmo
 #endif

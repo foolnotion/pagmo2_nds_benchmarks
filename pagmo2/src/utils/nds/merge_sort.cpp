@@ -133,7 +133,6 @@ public:
     void updateIncrementalBitset(int solutionId)
     {
         int wordIndex = solutionId >> N_BIT_ADDR;
-        // int shiftDistance = solutionId & 0x3f;
         int shiftDistance = solutionId;
         incrementalBitset[wordIndex] |= (word_t{1} << shiftDistance);
         if (incBsLstWord < wordIndex) incBsLstWord = wordIndex;
@@ -142,7 +141,6 @@ public:
 
     bool initializeSolutionBitset(int solutionId)
     {
-        // int const shiftDistance = solutionId & 0x3f;
         int const shiftDistance = solutionId;
         int wordIndex = solutionId >> N_BIT_ADDR;
         if (wordIndex < incBsFstWord || 0 == solutionId) {
@@ -204,8 +202,8 @@ public:
 inline int CompareLex(vector_double const &s1, vector_double const &s2, size_t fromObj, size_t toObj)
 {
     for (; fromObj < toObj; fromObj++) {
-        if (s1[fromObj] < s2[fromObj]) return -1;
-        if (s1[fromObj] > s2[fromObj]) return 1;
+        if (detail::less_than_f(s1[fromObj], s2[fromObj])) return -1;
+        if (detail::less_than_f(s2[fromObj], s1[fromObj])) return 1;
     }
     return 0;
 }
@@ -273,6 +271,8 @@ fnds_return_type merge_non_dominated_sorting(const std::vector<vector_double> &p
     const pop_size_t SORT_INDEX = SOL_ID + 1;
 
     // initialize auxiliary data structures
+    // the points are already sorted by the first objective
+    // so no sorting needs to be performed here
     for (decltype(N) i = 0; i < N; ++i) {
         population[i].resize(SORT_INDEX + 1);
         std::copy_n(points[i].begin(), M, population[i].begin());
@@ -283,7 +283,7 @@ fnds_return_type merge_non_dominated_sorting(const std::vector<vector_double> &p
     decltype(N) solutionId;
     bool dominance{false};
     work = population;
-    detail::MergeSort(population, work, 0, N, 1, 2);
+    detail::MergeSort(population, work, 0, N, 1, 2); // sort according to second objective
     population = work;
     for (decltype(N) p = 0; p < N; p++) {
         solutionId = (int)population[p][SORT_INDEX];
